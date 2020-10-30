@@ -9,23 +9,29 @@ namespace Dropper.Extensions
     {
         public static string ReadNetworkStream(this NetworkStream ns)
         {
-            byte[] data = new byte[1024];
-            using (MemoryStream memoryStream = new MemoryStream())
+            try
             {
-                do
-                {
-                    var readCount = ns.Read(data, 0, data.Length);
-                    memoryStream.Write(data, 0, readCount);
-                } while (ns.DataAvailable);
+                byte[] data = new byte[1024];
+                MemoryStream ms = new MemoryStream();
 
-                return Encoding.ASCII.GetString(memoryStream.ToArray(), 0, (int)memoryStream.Length);
+                int numBytesRead;
+                while ((numBytesRead = ns.Read(data, 0, data.Length)) > 0)
+                    ms.Write(data, 0, numBytesRead);
+
+                return Encoding.ASCII.GetString(ms.ToArray(), 0, (int)ms.Length);
             }
+            catch
+            {
+                return "";
+            }
+
+
         }
         public static void WriteOnNetworkStream(this NetworkStream ns, string message)
         {
             byte[] bytesToSend = ASCIIEncoding.ASCII.GetBytes(message);
             ns.Write(bytesToSend, 0, bytesToSend.Length);
         }
-    
+
     }
 }

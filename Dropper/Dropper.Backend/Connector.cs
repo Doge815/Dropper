@@ -34,7 +34,7 @@ namespace Dropper.Backend
             ns.WriteOnNetworkStream("MSG");
         }
 
-        public async void HandleRequests(object stateInfo)
+        public void HandleRequests(object stateInfo)
         {
             ManualResetEvent tcpClientConnected = new ManualResetEvent(false);
             TcpClient client = null;
@@ -48,7 +48,7 @@ namespace Dropper.Backend
             }
 
             Debug.Print("Server started");
-            while(true)
+            while (true)
             {
                 tcpClientConnected.Reset();
                 Server.BeginAcceptTcpClient(new AsyncCallback(DoAcceptTcpClientCallback), Server);
@@ -57,6 +57,8 @@ namespace Dropper.Backend
 
                 string text = stream.ReadNetworkStream();
                 Debug.Print("msg is: " + text);
+
+                stream.WriteOnNetworkStream("ANSWER");
             }
         }
 
